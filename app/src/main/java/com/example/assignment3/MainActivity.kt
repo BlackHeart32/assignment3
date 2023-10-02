@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -27,8 +29,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -66,28 +70,28 @@ fun MainScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(30.dp)
-            .border(width = 3.dp, brush = Brush.horizontalGradient(), shape = CircleShape)
-
+            .padding(vertical = 30.dp)
     ){
         Text(
             text = stringResource(R.string.header),
-            fontSize = 35.sp,
-            fontWeight = FontWeight.Bold
+            fontSize = 36.sp,
+            modifier = Modifier.padding(20.dp)
+
         )
         //Description Text
         Text(
             text = stringResource(id = R.string.description),
-            fontSize = 12.sp
+            fontSize = 14.sp
         )
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(vertical = 16.dp)
         ){
            Text(
-               text= stringResource(
-                   id = R.string.dollarsign,
-
-               )
+               text= stringResource(id = R.string.dollarsign),
+               fontWeight = FontWeight.Bold,
+               modifier = Modifier.padding(vertical = 6.dp, horizontal = 4.dp),
+               fontSize = 24.sp
            )
             TextField(
                 value = billAmount,
@@ -95,6 +99,41 @@ fun MainScreen() {
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
+        }
+        Text(text = stringResource(id = R.string.select))
+        Row(
+            modifier = Modifier.padding(vertical = 14.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+
+        ){
+            Button(onClick = {}, shape = RoundedCornerShape(8.dp)){
+                Text(text="10%")
+            }
+            Button(onClick = {}, shape = RoundedCornerShape(8.dp) ){
+                Text(text="20%")
+            }
+            Button(onClick = {}, shape = RoundedCornerShape(8.dp) ){
+                Text(text="30%")
+            }
+        }
+        Button(onClick = {}, shape = RoundedCornerShape(8.dp)){
+            Text(stringResource(R.string.calc))
+        }
+
+    }
+    Column() {
+        Row(
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = stringResource(R.string.tip),
+                fontSize = 28.sp
+            )
+            Text(
+                text = "3.32",
+                fontSize = 28.sp
+            )
         }
     }
 }

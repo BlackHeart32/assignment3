@@ -3,4 +3,9 @@
     <string name="header">Tip Calculator</string>
     <string name="description">Enter your check ammount:</string>
     <string name="dollarsign">$</string>
+    <string name="select">Select your tip amount:</string>
+    <string name="calc">Calculate</string>
+    <string name="err">Error</string>
+    <string name="tip">Tip:</string>
+    <string name="tot">Total:</string>
 </resources>
