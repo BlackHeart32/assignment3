@@ -2,6 +2,7 @@ package com.example.assignment3
 
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -51,14 +53,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.example.assignment3.ui.theme.Assignment3Theme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             Assignment3Theme {
-
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = colorScheme.background
@@ -66,6 +71,8 @@ class MainActivity : ComponentActivity() {
                     MainScreen()
                 }
             }
+
+
         }
     }
 }
@@ -77,8 +84,14 @@ fun MainScreen() {
     var tipAmount by remember { mutableStateOf("") }
     var totalAmount by remember { mutableStateOf("") }
     var tipPercentage by remember { mutableStateOf(PERCS.TEN) }
-    val unselected: ButtonColors = ButtonDefaults.buttonColors(containerColor = colorScheme.secondary, contentColor = colorScheme.onSecondary)
-    val selected: ButtonColors = ButtonDefaults.buttonColors(containerColor = colorScheme.primary, contentColor = colorScheme.onPrimary)
+    val unselected: ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = colorScheme.secondary,
+        contentColor = colorScheme.onSecondary
+    )
+    val selected: ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = colorScheme.primary,
+        contentColor = colorScheme.onPrimary
+    )
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -119,11 +132,11 @@ fun MainScreen() {
             modifier = Modifier.padding(vertical = 14.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
 
-        ) {
+            ) {
             Button(
-                onClick = {tipPercentage = PERCS.TEN},
+                onClick = { tipPercentage = PERCS.TEN },
                 shape = RoundedCornerShape(8.dp),
-                colors = if(tipPercentage == PERCS.TEN) selected else unselected
+                colors = if (tipPercentage == PERCS.TEN) selected else unselected
             )
             {
                 Text(text = "10%")
@@ -131,14 +144,14 @@ fun MainScreen() {
             Button(
                 onClick = { tipPercentage = PERCS.TWE },
                 shape = RoundedCornerShape(8.dp),
-                colors = if(tipPercentage == PERCS.TWE) selected else unselected
+                colors = if (tipPercentage == PERCS.TWE) selected else unselected
             ) {
                 Text(text = "20%")
             }
             Button(
                 onClick = { tipPercentage = PERCS.THR; },
                 shape = RoundedCornerShape(8.dp),
-                colors = if(tipPercentage == PERCS.THR) selected else unselected
+                colors = if (tipPercentage == PERCS.THR) selected else unselected
             ) {
                 Text(text = "30%")
             }
@@ -147,32 +160,30 @@ fun MainScreen() {
         Button(onClick = {
 
             if (billAmount != null && billAmount != "") {
-                tipAmount = Calculate(tipPercentage, billAmount).toString()
-            }else{
+                val (tip, total) = Calculate(tipPercentage, billAmount)
+                tipAmount = tip
+                totalAmount = total
+            } else {
                 tipAmount = "Error"
             }
         }, shape = RoundedCornerShape(8.dp)) {
             Text(stringResource(R.string.calc))
         }
-    }
-    Column(
-        verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            modifier = Modifier.padding(vertical = 10.dp)
-        ) {
+        Row(modifier = Modifier.padding(top = 100.dp).imePadding()) {
             Text(
-                text = stringResource(R.string.tip),
-                fontSize = 28.sp
+                text = if(tipAmount == "") "" else stringResource(R.string.tip),
+                fontSize = 28.sp,
+                modifier = Modifier.imePadding()
             )
             Text(
                 text = tipAmount,
-                fontSize = 28.sp
+                fontSize = 28.sp,
+                modifier = Modifier.imePadding()
+
             )
         }
         Row(
-            modifier = Modifier.padding(vertical = 10.dp)
+            modifier = Modifier.padding(vertical = 10.dp).imePadding()
         ) {
             Text(
                 text = stringResource(R.string.tot),
@@ -186,21 +197,14 @@ fun MainScreen() {
     }
 }
 
-enum class PERCS(val multiplier: Double, val index: Int) {
-    TEN(1.10, 1), TWE(1.20, 2 ), THR(1.30, 3)
+enum class PERCS(val multiplier: Double) {
+    TEN(0.10), TWE(0.20), THR(0.30)
 }
 
-fun Calculate(perc: PERCS, check: String): Double {
-
-//  Oneliners rule
-    return (check.toDouble() * perc.multiplier)
-//    if(perc == PERCS.TEN){
-//        return (check.toDouble() * 1.10)
-//    }else if(perc == PERCS.TWE){
-//        return (check.toDouble() * perc.multiplier)
-//    }else if(perc == PERCS.THR){
-//        return (check.toDouble() * 1.20)
-//    }
+fun Calculate(perc: PERCS, check: String): Pair<String, String> {
+    val tip = (check.toDouble() * perc.multiplier)
+    val total = tip + check.toDouble()
+    return tip.toString() to total.toString()
 }
 
 @Preview(showBackground = true)
