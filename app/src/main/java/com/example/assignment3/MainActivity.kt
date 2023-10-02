@@ -121,13 +121,27 @@ fun MainScreen() {
         }
 
     }
-    Column() {
+    Column(
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Row(
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.Center
+            modifier = Modifier.padding(vertical = 10.dp)
         ) {
             Text(
                 text = stringResource(R.string.tip),
+                fontSize = 28.sp
+            )
+            Text(
+                text = "3.32",
+                fontSize = 28.sp
+            )
+        }
+        Row(
+            modifier = Modifier.padding(vertical = 10.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.tot),
                 fontSize = 28.sp
             )
             Text(
