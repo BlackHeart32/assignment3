@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -80,10 +79,13 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
+    //Setting each of my mutable state variables to hold the mutable information of my application
     var billAmount by remember { mutableStateOf("") }
     var tipAmount by remember { mutableStateOf("") }
     var totalAmount by remember { mutableStateOf("") }
+    //A mutable state variable to hold the current tip percentage to be applied
     var tipPercentage by remember { mutableStateOf(PERCS.TEN) }
+    //The following variables are color schemes to apply to the selected and unselected buttons.
     val unselected: ButtonColors = ButtonDefaults.buttonColors(
         containerColor = colorScheme.secondary,
         contentColor = colorScheme.onSecondary
@@ -92,7 +94,7 @@ fun MainScreen() {
         containerColor = colorScheme.primary,
         contentColor = colorScheme.onPrimary
     )
-
+    //Column to host most (if not all) of our application components.
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -106,6 +108,7 @@ fun MainScreen() {
 
         )
         //Description Text
+        //Avoided using hardcoded text and setup proper alignment and padding
         Text(
             text = stringResource(id = R.string.description),
             fontSize = 14.sp
@@ -128,6 +131,9 @@ fun MainScreen() {
 
         }
         Text(text = stringResource(id = R.string.select))
+        //A row for the tip percentage options, each button will set the tip percentage to their represented options.
+        //The button that holds the current selected percentage option will be highlighted to stand out from the others.
+        //The text in the buttons will tell the user what percentages such button will apply.
         Row(
             modifier = Modifier.padding(vertical = 14.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -158,39 +164,37 @@ fun MainScreen() {
         }
 
         Button(onClick = {
-
-            if (billAmount != null && billAmount != "") {
+                //Destructuring the values calculated and assigning the to the mutable states holding tip and total
                 val (tip, total) = Calculate(tipPercentage, billAmount)
                 tipAmount = tip
                 totalAmount = total
-            } else {
-                tipAmount = "Error"
-            }
+
         }, shape = RoundedCornerShape(8.dp)) {
             Text(stringResource(R.string.calc))
         }
-        Row(modifier = Modifier.padding(top = 40.dp).imePadding()) {
+        Row(modifier = Modifier.padding(top = 40.dp)) {
             Text(
-                text = if(tipAmount == "") "" else stringResource(R.string.tip),
-                fontSize = 28.sp,
-                modifier = Modifier.imePadding()
-            )
-            Text(
-                text = tipAmount,
-                fontSize = 28.sp,
-                modifier = Modifier.imePadding()
-
-            )
-        }
-        Row(
-            modifier = Modifier.padding(vertical = 10.dp).imePadding()
-        ) {
-            Text(
-                text = stringResource(R.string.tot),
+                //If there is no tip calculated yet, Display nothing in the place holder and tip amount
+                text = if(tipAmount == "" || tipAmount == "Error") "" else stringResource(R.string.tip),
                 fontSize = 28.sp
             )
             Text(
-                text = totalAmount,
+
+                text = tipAmount,
+                fontSize = 28.sp,
+            )
+        }
+        Row(
+            modifier = Modifier.padding(vertical = 10.dp)
+        ) {
+            Text(
+                //Checking if the returned value from calculate is error, if so, display nothing for total
+                if(totalAmount == "" || totalAmount == "Error") "" else stringResource(R.string.tot),
+                fontSize = 28.sp
+            )
+            Text(
+                //Since only one error message is needed, nothing will be displayed in total when an error happens
+                if(totalAmount == "" || totalAmount == "Error") "" else totalAmount,
                 fontSize = 28.sp
             )
         }
@@ -200,11 +204,19 @@ fun MainScreen() {
 enum class PERCS(val multiplier: Double) {
     TEN(0.10), TWE(0.20), THR(0.30)
 }
-
+//My calculate function will calculate the tip and total and return a pair of strings holding their values
 fun Calculate(perc: PERCS, check: String): Pair<String, String> {
-    val tip = (check.toDouble() * perc.multiplier)
-    val total = tip + check.toDouble()
-    return tip.toString() to total.toString()
+
+    try {
+        //Ensuring a max of 2 decimal places
+        val tip = Math.round((check.toDouble() * perc.multiplier) * 100.0) /100.0
+        val total = Math.round((tip + check.toDouble()) * 100.0)/100.0
+        return ("$$tip").toString() to ("$$total").toString()
+    }
+    //This exception handler will catch if the user didn't enter an amount yet, and if the entered input is mixed with letters
+    catch(e: Exception){
+        return "Error" to "Error"
+    }
 }
 
 @Preview(showBackground = true)
