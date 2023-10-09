@@ -169,7 +169,7 @@ fun MainScreen() {
         }, shape = RoundedCornerShape(8.dp)) {
             Text(stringResource(R.string.calc))
         }
-        Row(modifier = Modifier.padding(top = 100.dp).imePadding()) {
+        Row(modifier = Modifier.padding(top = 40.dp).imePadding()) {
             Text(
                 text = if(tipAmount == "") "" else stringResource(R.string.tip),
                 fontSize = 28.sp,
